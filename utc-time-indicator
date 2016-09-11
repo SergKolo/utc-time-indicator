@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+#
+# Author: Serg Kolo , contact: 1047481448@qq.com
+# Date: September 11, 2016
+# Purpose: Indicator for Ubuntu Unity to show UTC time
+# Tested on: Ubuntu 16.04 LTS
+#
+# Icon by Zacharee1: http://askubuntu.com/users/274320/zacharee1
+#
+# Licensed under The MIT License (MIT).
+# See included LICENSE file or the notice below.
+#
+# Copyright © 2016 Sergiy Kolodyazhnyy
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+import gi
+gi.require_version('AppIndicator3', '0.1')
+
+from gi.repository import GLib as glib
+from gi.repository import AppIndicator3 as appindicator
+from gi.repository import Gtk as gtk
+from time import gmtime
+import os
+
+class UtcIndicator(object):
+
+    def __init__(self):
+        self.app = appindicator.Indicator.new(
+        'UTC-Time-Indicator', 'indicator-messages',
+        appindicator.IndicatorCategory.APPLICATION_STATUS
+        )
+
+        #self.icon_path = os.path.dirname(os.path.realpath(__file__))
+        #self.icon = os.path.join(self.icon_path,'utc_indicator.png')
+        #self.app.set_icon(self.icon)        
+        self.app_menu = gtk.Menu()
+
+        self.quit_app = gtk.MenuItem('Quit')
+        self.app_menu.append(self.quit_app)
+        self.quit_app.connect('activate', self.quit)
+        
+        self.quit_app.show()
+ 
+        self.app.set_menu(self.app_menu)
+
+        self.update_label()
+
+    def run(self,data=None):
+
+        try:
+            gtk.main()
+        except KeyboardInterrupt:
+           pass
+
+
+    def quit(self, data=None):
+        gtk.main_quit()
+
+
+    def update_label(self):
+        label_text = str(gmtime().tm_hour) + ":" + str(gmtime().tm_min)
+        print(label_text)
+        self.app.set_label(label_text, '')
+        glib.timeout_add_seconds(3, self.callback)
+
+
+    def callback(self):
+        self.update_label()
+
+def main():
+
+    indicator = UtcIndicator()
+    indicator.run()
+
+if __name__ == '__main__':
+    main()
