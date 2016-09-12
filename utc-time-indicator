@@ -76,8 +76,7 @@ class UtcTimeIndicator(object):
 
 
     def update_label(self):
-        time_tuple = ( gmtime().tm_hour,gmtime().tm_min )
-        label_text = '{0[0]:d}:{0[1]:02d}'.format(time_tuple)
+        label_text = '{0}:{1:02d}'.format(gmtime().tm_hour,gmtime().tm_min)
         self.app.set_label(label_text,"")
         glib.timeout_add_seconds(1, self.callback)
 
